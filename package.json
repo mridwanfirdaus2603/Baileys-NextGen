@@ -1,15 +1,21 @@
 {
-  "name": "baileys",
+  "name": "@mridwanfirdaus2603/baileys-nextgen",
   "type": "module",
   "version": "7.0.0-rc14",
-  "description": "A WebSockets library for interacting with WhatsApp Web",
+  "description": "Enterprise-Grade WebSockets Client for WhatsApp Protocol featuring Human Natural Engine (Anti-Ban), Next-Gen Pairing Suite, Bad MAC Auto-Repair, & 429 Rate-Limit Shield",
   "keywords": [
     "whatsapp",
-    "automation"
+    "baileys",
+    "anti-ban",
+    "resilience-engine",
+    "pairing-code",
+    "automation",
+    "websockets"
   ],
-  "homepage": "https://github.com/WhiskeySockets/Baileys/",
+  "homepage": "https://github.com/mridwanfirdaus2603/Baileys-NextGen#readme",
   "repository": {
-    "url": "git@github.com:WhiskeySockets/Baileys.git"
+    "type": "git",
+    "url": "git+https://github.com/mridwanfirdaus2603/Baileys-NextGen.git"
   },
   "license": "MIT",
   "author": "Rajeh Taher",
