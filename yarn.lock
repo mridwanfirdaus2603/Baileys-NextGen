@@ -1781,9 +1781,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mridwanfirdaus2603/baileys-nextgen@workspace:.":
+"@muhammadridwanf61/baileys-nextgen@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@mridwanfirdaus2603/baileys-nextgen@workspace:."
+  resolution: "@muhammadridwanf61/baileys-nextgen@workspace:."
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@eslint/eslintrc": "npm:^3.3.1"
