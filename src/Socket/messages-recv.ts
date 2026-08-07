@@ -2,6 +2,7 @@ import NodeCache from '@cacheable/node-cache'
 import { Boom } from '@hapi/boom'
 import { randomBytes } from 'crypto'
 import Long from 'long'
+import { LRUCache } from 'lru-cache'
 import { proto } from '../../WAProto/index.js'
 import {
 	DEFAULT_CACHE_TTLS,
@@ -158,6 +159,11 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 
 	// Debounce identity-change session refreshes per JID to avoid bursts
 	const identityAssertDebounce = new NodeCache<boolean>({ stdTTL: 5, useClones: false })
+
+	// Vault message cache for anti-delete tracking
+	const vaultMessageCache = new LRUCache<string, WAMessage>({
+		max: config.vaultOptions?.maxCacheSize || 5000
+	})
 
 	let sendActiveReceipts = false
 
@@ -2015,9 +2021,72 @@ export const makeMessagesRecvSocket = (config: SocketConfig) => {
 		handleBadAck(node).catch(error => onUnexpectedError(error, 'handling bad ack'))
 	})
 
+	const callerAttemptCache = new LRUCache<string, number>({
+		max: 1000,
+		ttl: 10 * 60 * 1000
+	})
+
+	ev.on('messages.upsert', ({ messages }) => {
+		for (const msg of messages) {
+			if (msg.key?.id) {
+				const cacheKey = `${msg.key.remoteJid || ''}_${msg.key.id}`
+				vaultMessageCache.set(cacheKey, msg)
+				vaultMessageCache.set(msg.key.id, msg)
+			}
+
+			if (config.vaultOptions?.saveViewOnce && msg.message) {
+				const viewOnceWrapper =
+					msg.message.viewOnceMessage || msg.message.viewOnceMessageV2 || msg.message.viewOnceMessageV2Extension
+				if (viewOnceWrapper?.message) {
+					msg.message = viewOnceWrapper.message
+				}
+			}
+		}
+	})
+
+	ev.on('messages.update', updates => {
+		if (!config.vaultOptions?.trackDeletedMessages) {
+			return
+		}
+
+		for (const update of updates) {
+			if (update.update?.messageStubType === WAMessageStubType.REVOKE || update.update?.message === null) {
+				const id = update.key?.id
+				const remoteJid = update.key?.remoteJid
+				if (id) {
+					const cacheKey = `${remoteJid || ''}_${id}`
+					const deletedMsg = vaultMessageCache.get(cacheKey) || vaultMessageCache.get(id)
+					if (deletedMsg) {
+						ev.emit('message.deleted', deletedMsg)
+					}
+				}
+			}
+		}
+	})
+
 	ev.on('call', async ([call]) => {
 		if (!call) {
 			return
+		}
+
+		if (call.status === 'offer' && config.callGuard?.autoReject) {
+			try {
+				await rejectCall(call.id, call.from)
+				const targetJid = call.chatId || call.from
+				if (config.callGuard.autoReplyText && targetJid) {
+					await sock.sendMessage(targetJid, { text: config.callGuard.autoReplyText })
+				}
+
+				if (config.callGuard.autoBlockSpammer) {
+					const attempts = (callerAttemptCache.get(call.from) || 0) + 1
+					callerAttemptCache.set(call.from, attempts)
+					if (attempts >= 3) {
+						await sock.updateBlockStatus(call.from, 'block')
+					}
+				}
+			} catch (error) {
+				logger.error({ error, callId: call.id }, 'failed to handle callGuard autoReject')
+			}
 		}
 
 		// missed call + group call notification message generation

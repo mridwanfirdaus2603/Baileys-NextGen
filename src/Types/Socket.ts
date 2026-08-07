@@ -1,6 +1,7 @@
 import type { Agent } from 'https'
 import type { URL } from 'url'
 import { proto } from '../../WAProto/index.js'
+import type { ResilienceEngineOptions } from '../Resilience'
 import type { ILogger } from '../Utils/logger'
 import type { AuthenticationState, LIDMapping, SignalAuthState, TransactionCapabilityOptions } from './Auth'
 import type { GroupMetadata } from './GroupMetadata'
@@ -9,6 +10,18 @@ import type { SignalRepositoryWithLIDStore } from './Signal'
 
 export type WAVersion = [number, number, number]
 export type WABrowserDescription = [string, string, string]
+
+export type CallGuardOptions = {
+	autoReject?: boolean
+	autoReplyText?: string
+	autoBlockSpammer?: boolean
+}
+
+export type VaultOptions = {
+	saveViewOnce?: boolean
+	trackDeletedMessages?: boolean
+	maxCacheSize?: number
+}
 
 export type CacheStore = {
 	/** get a cached key and change the stats */
@@ -108,6 +121,15 @@ export type SocketConfig = {
 
 	/** Enable recent message caching for retry handling */
 	enableRecentMessageCache: boolean
+
+	/** Call Guard options for auto-rejecting incoming calls */
+	callGuard?: CallGuardOptions
+
+	/** Vault options for tracking deleted messages and auto-saving viewonce media */
+	vaultOptions?: VaultOptions
+
+	/** Resilience options for Bad MAC recovery, rate-limit guard, and session revival */
+	resilienceOptions?: ResilienceEngineOptions
 
 	/**
 	 * Returns if a jid should be ignored,

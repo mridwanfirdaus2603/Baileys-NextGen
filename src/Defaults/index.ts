@@ -84,6 +84,16 @@ export const DEFAULT_CONNECTION_CONFIG: SocketConfig = {
 	generateHighQualityLinkPreview: false,
 	enableAutoSessionRecreation: true,
 	enableRecentMessageCache: true,
+	callGuard: {
+		autoReject: false,
+		autoReplyText: undefined,
+		autoBlockSpammer: false
+	},
+	vaultOptions: {
+		saveViewOnce: true,
+		trackDeletedMessages: true,
+		maxCacheSize: 5000
+	},
 	options: {},
 	appStateMacVerification: {
 		patch: false,
