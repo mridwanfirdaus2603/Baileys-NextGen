@@ -7,7 +7,7 @@ Featuring **Human Natural Engine (Anti-Ban)**, **Next-Gen Pairing Suite**, **Bad
 
 <br/>
 
-[![npm version](https://img.shields.io/badge/npm-v7.0.0--rc14-7F52FF?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@muhammadridwanf61/baileys-nextgen)
+[![GitHub Release](https://img.shields.io/github/v/release/mridwanfirdaus2603/Baileys-NextGen?style=for-the-badge&color=7F52FF&logo=github)](https://github.com/mridwanfirdaus2603/Baileys-NextGen/releases/latest)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-Passing-brightgreen?style=for-the-badge&logo=github-actions)](https://github.com/mridwanfirdaus2603/Baileys-NextGen/actions)
 [![Unit Tests](https://img.shields.io/badge/Tests-438%2F438%20Passed-brightgreen?style=for-the-badge&logo=jest)](https://github.com/mridwanfirdaus2603/Baileys-NextGen)
 [![TypeScript Strict](https://img.shields.io/badge/TypeScript-5.9%20Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
